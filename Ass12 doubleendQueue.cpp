@@ -1,220 +1,127 @@
-
 #include<iostream>
 using namespace std;
-
-#define MAX 20
-class stack
-{
-	int top,topeval;
-	char infix[MAX], postfix[MAX],stk[MAX];
-	float stkeval[MAX];
-	public:
-	stack();
-	void push(char);
-	void pusheval(float);
-	void read();
-	int IsEmpty ();
-	int IsEmptyeval ();
-	char pop();
-	float popeval();
-	void covert_infix_postfix();
-	int priority(char x);
-	float evaluatepostfix();
+#define size 5
+class dequeue{
+    int a[10],front,rear,count;
+    public:
+    dequeue();
+    void addbeg(int);
+    void addend(int);
+    void deltbeg();
+    void deltend();
+    void display();
 };
 
-stack :: stack ()
-{
-	top=-1;
-	topeval=-1;
+dequeue::dequeue(){
+    front=-1;
+    rear=-1;
+    count=0;
 }
 
-int stack :: IsEmpty ()
-{
-	
-	if (top == -1) 		
-		return (-1);
-	else
-		return (1);
-}
-int stack :: IsEmptyeval ()
-{
-	 
-	if (topeval == -1) 		
-		return (-1);
-	else
-		return (1);
-}
-
-void stack :: push(char temp)
-{
-	 
-	top ++;	 		
-	if (top == MAX)		
-		cout<<"Stack is Full";
-	else
-	{
-		stk [top] = temp;	
-	      
-	}
-
-}
-void stack :: pusheval(float temp)
-{
-	 
-	topeval ++;	 		
-	if (topeval == MAX)		
-		cout<<"Stack is Full";
-	else
-	{
-		stkeval [topeval] = temp;	
-	       
-	}
-
+void dequeue::addbeg(int x){
+    int i;
+    if(front==-1){
+        front++;
+        rear++;
+        a[rear]=x;
+        count++;
+    }
+    else if(rear>=size-1){
+        cout<<"overflow"<<endl;
+        return;
+    }
+    else{
+        for(i=count;i>=0;i--){
+            a[i]=a[i-1];
+        }
+        a[i]=x;
+        count++;
+        rear++;
+    }
 }
 
-char stack :: pop()
-{
-	int status;
-	char temp;
-	status = IsEmpty ();
-	if (status == -1) {
-		
-		return ('@');
-	}
-	else	{
-		temp = stk [top--];	
-		return (temp);
-	}
+void dequeue::addend(int x){
+    if(front==-1){
+        front++;
+        rear++;
+        a[rear]=x;
+        count++;
+    }
+    else if(rear>=size-1){
+        cout<<"overflow"<<endl;
+        return;
+    }
+    else{
+        a[++rear]=x;
+    }
 }
 
-float stack :: popeval()
-{
-	int status;
-	float temp;
-	status = IsEmptyeval ();
-	if (status == -1) {
-		
-		return (-999);
-	}
-	else	{
-		temp = stkeval [topeval--];	
-		return (temp);
-	}
-}
-void stack :: read()
-{
-	cout<<"Enter infix expression ";
-	cin>>infix;
+void dequeue::deltbeg(){
+    if(front==-1){
+        cout<<"underflow"<<endl;
+    }
+    else{
+        if(front==rear){
+            front=rear=-1;
+            return;
+        }
+        cout<<"Deleted ELE is:"<<a[front];
+        front+=1;
+    }
 }
 
-
-void stack :: covert_infix_postfix()
-{
-	int i,k=0;
-	char sop;
-	for(i=0;infix[i]!='\0';i++)
-	{
-		if(infix[i]>='0' && infix[i]<='9')
-			postfix[k++] = infix[i];
-		else if(infix[i]=='(')
-			push(infix[i]);
-		else if(infix[i]==')')
-		{
-			while((sop=pop())!='(')
-				
-				postfix[k++]=sop;
-		}
-		else	
-		{
-			while(priority(infix[i]) <= priority(sop=pop()))
-			{
-			
-				postfix[k++] = sop;
-				if(top==-1)
-					break;
-			}
-			
-			if(priority(infix[i]) > priority(sop))
-			{
-				push(sop);	
-			}
-			push(infix[i]);	
-		}
-		}
-	while(top!=-1)
-	{
-			
-			sop = pop();
-			postfix[k++] = sop;
-	}
-	postfix[k-1]='\0';
-	cout<<endl<<"The postfix is : "<<postfix;
-	}
-
-int stack :: priority(char x)
-{
-	switch(x)
-	{
-		case '@':
-			return -1;
-		case '(':
-			return 0;
-		case '+':
-			return 1;
-		case '-':
-			return 1;
-		case '*':
-			return 2;
-		case '/':
-			return 2;
-	}
+void dequeue::deltend(){
+    if(front==-1){
+        cout<<"underflow"<<endl;
+        return;
+    }
+    else{
+        if(front==rear){
+            front=rear=-1;
+            return;
+        }
+        cout<<"Deleted ELE is:"<<a[rear];
+        rear=rear-1;
+    }
 }
 
-float stack :: evaluatepostfix()
-{
-	float value,operand1,operand2,result;
-	for(int i=0;postfix[i]!='\0';i++)
-	{
-		// Push operands onto the stack
-		if(postfix[i]>='0' && postfix[i]<='9')
-		{
-			value = postfix[i] - 48;
-			pusheval(value);
-		}
-
-		
-		else
-		{
-			operand2=popeval();
-			operand1=popeval();
-			switch(postfix[i])
-			{
-			case '+':
-				result=operand1+operand2;
-				break;
-			case '*':
-				result=operand1*operand2;
-				break;
-			case '-':
-				result=operand1-operand2;
-				break;
-			case '/':
-				result=operand1/operand2;
-				break;
-			}
-			pusheval(result);
-		}
-	}
-	result=popeval();
-	return result;
+void dequeue::display(){
+    for(int i=front;i<=rear;i++){
+        cout<<a[i]<<" ";
+    }
 }
-int main()
-{
-	stack s;
-	float answer;
-	s.read();
-	s.covert_infix_postfix();
-	answer=s.evaluatepostfix();
-	cout<<endl<<"The answer is : "<<answer;
-	return 0;
+
+int main(){
+    int x,ch;
+    dequeue d;
+    do{
+        cout<<"Menu: 1.Addbeg 2.Addend 3.deltbeg 4.deltend 5.display";
+        cin>>ch;
+        switch (ch)
+        {
+        case 1:
+            cout<<"Enter ele"<<endl;
+            cin>>x;
+            d.addbeg(x);
+            break;
+        case 2:
+            cout<<"Enter ele"<<endl;
+            cin>>x;
+            d.addend(x);
+            break;
+        case 3:
+            d.deltbeg();
+            break;
+        case 4:
+            d.deltend();
+            break;
+        case 5:
+            d.display();
+            break;
+        default:
+            cout<<"Invalid choice";
+            break;
+        }
+    }while(ch!=7);
+    return 0;
 }
